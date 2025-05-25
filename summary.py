@@ -25,7 +25,7 @@ scheduler = AsyncIOScheduler(timezone='Europe/Kyiv')
 load_dotenv(dotenv_path='.env')
 
 # Проверка обязательных переменных окружения
-TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+TOKEN = os.getenv('DISCORD_SUMMARYBOT_TOKEN')
 GUILD_ID = os.getenv('GUILD_ID')
 SUMMARY_ID = os.getenv('SUMMARY_ID')
 SUMMARY_ROLE_ID = os.getenv('SUMMARY_ROLE_ID')
@@ -135,7 +135,8 @@ async def collect_messages_from_yesterday(channel_ids=None, progress_message=Non
                 progress_message,
                 processed_channels,
                 total_channels,
-                f"Текущий канал: #{channel.name} | Собрано сообщений: {messages_count}"
+                f"Собрано сообщений: {messages_count}"
+                #f"Текущий канал: #{channel.name} | Собрано сообщений: {messages_count}"
             )
 
         try:
@@ -181,6 +182,8 @@ async def format_and_send_digest(channel, collected_messages):
 
 async def send_text_digest(channel, messages_by_channel, summary_date, channel_order_map):
     text_summary = f"📚 **Выжимка 2TOP SQUAD за {summary_date}**\n"
+    #роль squadmember
+    role_mention = f"<@&829341057190723595>"
 
     channels_in_list = []
     channels_not_in_list = []
@@ -211,11 +214,14 @@ async def send_text_digest(channel, messages_by_channel, summary_date, channel_o
 
         if len(text_summary) + len(channel_text) > 1900:
             await channel.send(text_summary)
-            text_summary = f"📚 **Выжимка 2TOP SQUAD за {summary_date} (продолжение)**\n" + channel_text
+            #text_summary = f"📚 **Выжимка 2TOP SQUAD за {summary_date} (продолжение)**\n" + channel_text
+            text_summary = channel_text
         else:
             text_summary += channel_text
 
     if text_summary:
+        #тег роли 
+        text_summary += f"\n{role_mention}"
         await channel.send(text_summary)
 
 async def send_summary(channel, channel_ids=None, progress_message=None):
